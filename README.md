@@ -2,7 +2,27 @@
 
 `templates-papers-matching` 是一个用于模板化论文、课程报告、毕业设计文档等材料的 Codex Skill。它的目标不是“看起来差不多”，而是让生成或修复后的文档按给定模板和提交规则完成格式对齐，并留下可复查的校验证据。
 
-![工作流预览](assets/workflow-preview.png)
+![Templates Papers Matching 概览](assets/hero-skill-overview.png)
+
+## 效果预览
+
+Skill 的核心体验可以理解为“输入模板和文档，按结构角色匹配格式，再用机器校验结果”。
+
+### Skill 工作台
+
+![Skill 工作台界面](assets/ui-skill-console.png)
+
+### 合规报告
+
+![合规报告界面](assets/ui-report-dashboard.png)
+
+### 匹配流程
+
+![模板匹配流程](assets/workflow-rich.png)
+
+### 匹配引擎概念图
+
+![匹配引擎概念图](assets/matching-engine-visual.png)
 
 ## 适用场景
 
@@ -75,8 +95,7 @@ Skill 内部包含一个 DOCX 校验脚本，用来支撑可复查的结果。�
 - `references/workflow.md`：实际处理模板文档时的详细工作流。
 - `references/reporting.md`：合规报告和交付摘要写法。
 - `scripts/compare_docx_template.py`：内部 DOCX 格式校验工具。
-- `assets/workflow-preview.svg`：可编辑工作流效果图。
-- `assets/workflow-preview.png`：README 中展示的工作流预览图。
+- `assets/`：README 效果图、UI mockup 和工作流视觉资产。
 - `agents/openai.yaml`：Skill 的界面元数据。
 
 ## 设计原则
