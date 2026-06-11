@@ -1,95 +1,87 @@
 # Templates Papers Matching
 
-一个用于创建、修复和审核模板化论文/报告文档的 Codex Skill。目标是让 `.docx` 成果严格匹配给定模板和提交要求，并输出可复查的格式校验证据。
+`templates-papers-matching` 是一个用于模板化论文、课程报告、毕业设计文档等材料的 Codex Skill。它的目标不是“看起来差不多”，而是让生成或修复后的文档按给定模板和提交规则完成格式对齐，并留下可复查的校验证据。
 
 ![工作流预览](assets/workflow-preview.png)
 
-## 功能
+## 适用场景
 
-- 以用户提供的模板和提交规则为唯一格式依据。
-- 支持检查课程报告、论文、毕业设计文档等模板化 `.docx` 文件。
-- 对封面字段、摘要、关键词、一级标题、二级标题、正文、参考文献等角色进行格式比对。
-- 检查页面设置、段落格式、可选字体属性和显式颜色。
-- 支持输出 JSON 校验报告，方便交付、复查和多轮修复对比。
+- 根据学校、课程、期刊或竞赛提供的模板生成报告/论文。
+- 修复已经写好的 `.docx`，让它匹配模板格式。
+- 审核提交前文档是否符合模板要求。
+- 对封面、题目、作者信息、摘要、关键词、标题层级、正文、参考文献等结构化部分做格式一致性检查。
+- 需要交付一份“哪里通过、哪里不通过”的合规说明。
 
-## 目录结构
+## 如何调用
 
-- `SKILL.md`：Codex Skill 的触发说明和核心工作流。
-- `scripts/compare_docx_template.py`：DOCX 模板格式比对脚本。
-- `references/workflow.md`：真实模板匹配任务的操作流程。
+在 Codex 中使用这个 Skill 时，直接说明模板、目标文档和提交要求即可，例如：
+
+```text
+使用 $templates-papers-matching，帮我把 report.docx 按 template.docx 的格式修好，并输出检查结果。
+```
+
+```text
+使用 $templates-papers-matching，审核 final-paper.docx 是否符合 school-template.docx，重点检查标题、摘要、正文和参考文献格式。
+```
+
+```text
+使用 $templates-papers-matching，根据 template.docx 生成一份课程报告，并确保最终文档通过格式检查。
+```
+
+最好同时提供：
+
+- 模板文件。
+- 需要修复或生成的目标文档/正文内容。
+- 学校或老师额外给出的提交规则，例如字数、参考文献数量、文件命名、是否需要 PDF。
+- 哪些部分必须严格匹配，哪些部分可以按内容需要调整。
+
+## 工作原理
+
+这个 Skill 把模板当作唯一格式来源，而不是依赖默认样式或肉眼判断。
+
+整体流程是：
+
+1. 读取模板和提交规则，确定哪些结构必须匹配。
+2. 检查模板中的页面设置、段落样式、缩进、行距、段前段后、字体和颜色。
+3. 按“文档角色”处理内容，例如封面标题、题目、摘要、一级标题、二级标题、正文、参考文献。
+4. 优先从模板文档本身生成或修复目标文档，减少默认样式造成的偏差。
+5. 使用机器检查比对模板和目标文档。
+6. 根据检查结果迭代修复，直到通过或明确列出剩余不匹配项。
+
+## 校验思路
+
+Skill 内部包含一个 DOCX 校验脚本，用来支撑可复查的结果。它不是 README 的主要使用入口，而是 Skill 执行过程中的验证工具。
+
+校验会关注：
+
+- 页面大小、页边距、页眉页脚距离。
+- 关键段落角色的样式、对齐方式、缩进、行距、段前段后。
+- 需要时检查首个文本 run 的字体、字号、加粗和颜色。
+- 文档 XML 中是否残留不应出现的显式颜色，例如模板要求黑色但标题打开后变蓝。
+- 通过 JSON 报告记录检查结果，便于多轮修复和最终交付。
+
+## 交付结果
+
+一次完整使用通常会产出：
+
+- 修复或生成后的 `.docx` 文件。
+- 格式检查结果。
+- 如有需要，生成 JSON 校验报告。
+- 如仍有不匹配项，明确列出对应角色和属性，而不是笼统说“格式差不多”。
+
+## 文件结构
+
+- `SKILL.md`：Skill 的触发说明和核心执行规则。
+- `references/workflow.md`：实际处理模板文档时的详细工作流。
 - `references/reporting.md`：合规报告和交付摘要写法。
-- `assets/workflow-preview.svg`：可编辑的工作流效果图。
-- `assets/workflow-preview.png`：渲染后的工作流预览图。
+- `scripts/compare_docx_template.py`：内部 DOCX 格式校验工具。
+- `assets/workflow-preview.svg`：可编辑工作流效果图。
+- `assets/workflow-preview.png`：README 中展示的工作流预览图。
 - `agents/openai.yaml`：Skill 的界面元数据。
 
-## 快速使用
+## 设计原则
 
-运行 DOCX 格式检查：
-
-```powershell
-python scripts\compare_docx_template.py `
-  --template path\to\template.docx `
-  --target path\to\target.docx `
-  --check-colors `
-  --summary `
-  --report path\to\format-report.json
-```
-
-打印自动识别的段落角色映射：
-
-```powershell
-python scripts\compare_docx_template.py `
-  --template path\to\template.docx `
-  --target path\to\target.docx `
-  --dump-map `
-  --summary
-```
-
-只检查指定角色，便于定位问题：
-
-```powershell
-python scripts\compare_docx_template.py `
-  --template path\to\template.docx `
-  --target path\to\target.docx `
-  --roles h1,h2,ref_item `
-  --include-run
-```
-
-## 自定义角色映射
-
-如果自动识别的段落位置不符合实际模板结构，可以提供 JSON 映射文件：
-
-```json
-{
-  "cover_title": [8, 8],
-  "topic": [10, 10],
-  "article_title": [24, 23],
-  "abstract": [28, 27],
-  "h1": [31, 30],
-  "h2": [35, 36],
-  "ref_item": [53, 86]
-}
-```
-
-然后运行：
-
-```powershell
-python scripts\compare_docx_template.py `
-  --template path\to\template.docx `
-  --target path\to\target.docx `
-  --mapping path\to\mapping.json `
-  --check-colors `
-  --summary
-```
-
-映射值格式为 `[模板段落索引, 目标文档段落索引]`。
-
-## 校验 Skill
-
-在 Codex Skill 开发环境中，可以用对应的 `quick_validate.py` 检查 Skill 基础结构：
-
-```powershell
-python path\to\skill-creator\scripts\quick_validate.py .
-```
-
-DOCX 比对脚本依赖 Python 和 `python-docx`。
+- 模板优先：模板和提交规则高于默认样式、经验判断和肉眼观察。
+- 角色优先：按文档结构角色匹配格式，而不是按段落顺序盲目套样式。
+- 可验证：完成前必须有机器检查或明确的合规证据。
+- 可追踪：剩余问题要能定位到具体角色和具体属性。
