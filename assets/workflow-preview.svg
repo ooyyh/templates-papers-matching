@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">Templates Papers Matching workflow preview</title>
+  <desc id="desc">A four step workflow showing template intake, document repair, machine validation, and delivery report.</desc>
+  <defs>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="14" stdDeviation="18" flood-color="#111827" flood-opacity="0.16"/>
+    </filter>
+    <linearGradient id="topbar" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#2563EB"/>
+      <stop offset="0.55" stop-color="#059669"/>
+      <stop offset="1" stop-color="#D97706"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="720" fill="#F8FAFC"/>
+  <rect x="70" y="62" width="1060" height="596" rx="8" fill="#FFFFFF" filter="url(#shadow)"/>
+  <rect x="70" y="62" width="1060" height="72" rx="8" fill="url(#topbar)"/>
+  <rect x="70" y="126" width="1060" height="8" fill="#D97706" opacity="0.14"/>
+
+  <text x="112" y="108" font-family="Arial, sans-serif" font-size="30" font-weight="700" fill="#FFFFFF">Templates Papers Matching</text>
+  <text x="862" y="108" font-family="Arial, sans-serif" font-size="18" fill="#E0F2FE">DOCX format audit workflow</text>
+
+  <g transform="translate(114 178)">
+    <rect width="210" height="328" rx="8" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="2"/>
+    <rect x="34" y="42" width="142" height="182" rx="5" fill="#FFFFFF" stroke="#93C5FD" stroke-width="2"/>
+    <rect x="55" y="70" width="100" height="10" fill="#2563EB"/>
+    <rect x="55" y="98" width="78" height="8" fill="#94A3B8"/>
+    <rect x="55" y="122" width="100" height="8" fill="#CBD5E1"/>
+    <rect x="55" y="146" width="92" height="8" fill="#CBD5E1"/>
+    <rect x="55" y="170" width="102" height="8" fill="#CBD5E1"/>
+    <line x1="34" y1="248" x2="176" y2="248" stroke="#93C5FD" stroke-width="2"/>
+    <text x="32" y="286" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#1E3A8A">1. Template</text>
+    <text x="32" y="314" font-family="Arial, sans-serif" font-size="15" fill="#334155">Inspect styles, margins,</text>
+    <text x="32" y="338" font-family="Arial, sans-serif" font-size="15" fill="#334155">paragraph roles, colors.</text>
+  </g>
+
+  <path d="M342 342 H438" fill="none" stroke="#64748B" stroke-width="4" stroke-linecap="round"/>
+  <path d="M438 342 l-15 -10 v20 z" fill="#64748B"/>
+
+  <g transform="translate(456 178)">
+    <rect width="210" height="328" rx="8" fill="#ECFDF5" stroke="#A7F3D0" stroke-width="2"/>
+    <rect x="44" y="56" width="122" height="78" rx="6" fill="#FFFFFF" stroke="#34D399" stroke-width="2"/>
+    <rect x="64" y="80" width="82" height="9" fill="#059669"/>
+    <rect x="64" y="104" width="58" height="8" fill="#94A3B8"/>
+    <path d="M64 172 h82 m-82 24 h66 m-66 24 h92" stroke="#10B981" stroke-width="9" stroke-linecap="round"/>
+    <circle cx="164" cy="216" r="28" fill="#059669"/>
+    <path d="M151 216 l9 9 18 -22" fill="none" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="32" y="286" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#064E3B">2. Repair</text>
+    <text x="32" y="314" font-family="Arial, sans-serif" font-size="15" fill="#334155">Build from template and</text>
+    <text x="32" y="338" font-family="Arial, sans-serif" font-size="15" fill="#334155">apply role-based format.</text>
+  </g>
+
+  <path d="M684 342 H780" fill="none" stroke="#64748B" stroke-width="4" stroke-linecap="round"/>
+  <path d="M780 342 l-15 -10 v20 z" fill="#64748B"/>
+
+  <g transform="translate(798 178)">
+    <rect width="210" height="328" rx="8" fill="#FFF7ED" stroke="#FDBA74" stroke-width="2"/>
+    <rect x="34" y="52" width="142" height="154" rx="6" fill="#FFFFFF" stroke="#FB923C" stroke-width="2"/>
+    <text x="56" y="90" font-family="Consolas, monospace" font-size="17" fill="#9A3412">section []</text>
+    <text x="56" y="122" font-family="Consolas, monospace" font-size="17" fill="#9A3412">format  []</text>
+    <text x="56" y="154" font-family="Consolas, monospace" font-size="17" fill="#9A3412">colors  []</text>
+    <rect x="56" y="176" width="98" height="10" fill="#FDBA74"/>
+    <path d="M48 236 h114" stroke="#EA580C" stroke-width="8" stroke-linecap="round"/>
+    <text x="32" y="286" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#7C2D12">3. Validate</text>
+    <text x="32" y="314" font-family="Arial, sans-serif" font-size="15" fill="#334155">Run checker, dump map,</text>
+    <text x="32" y="338" font-family="Arial, sans-serif" font-size="15" fill="#334155">save JSON evidence.</text>
+  </g>
+
+  <g transform="translate(166 548)">
+    <rect width="868" height="54" rx="8" fill="#F1F5F9" stroke="#CBD5E1"/>
+    <circle cx="30" cy="27" r="13" fill="#2563EB"/>
+    <circle cx="300" cy="27" r="13" fill="#059669"/>
+    <circle cx="574" cy="27" r="13" fill="#D97706"/>
+    <circle cx="824" cy="27" r="13" fill="#111827"/>
+    <text x="54" y="33" font-family="Arial, sans-serif" font-size="16" fill="#0F172A">template.docx</text>
+    <text x="324" y="33" font-family="Arial, sans-serif" font-size="16" fill="#0F172A">target.docx</text>
+    <text x="598" y="33" font-family="Arial, sans-serif" font-size="16" fill="#0F172A">format-report.json</text>
+    <text x="848" y="33" font-family="Arial, sans-serif" font-size="16" fill="#0F172A">pass</text>
+  </g>
+</svg>

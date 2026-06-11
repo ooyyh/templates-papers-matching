@@ -1,4 +1,7 @@
 interface:
   display_name: "Templates Papers Matching"
   short_description: "Match papers and outputs to templates"
-  default_prompt: "Use this skill to create, repair, or audit an academic paper, report, or template-based artifact so it matches the provided template and submission requirements, then run the appropriate compliance check."
+  icon_small: "./assets/workflow-preview.png"
+  icon_large: "./assets/workflow-preview.svg"
+  brand_color: "#2563EB"
+  default_prompt: "Use $templates-papers-matching to create, repair, or audit an academic paper or report against a provided template and produce validation evidence."

@@ -98,6 +98,15 @@ def load_mapping(path):
     return {name: tuple(value) for name, value in data.items()}
 
 
+def parse_roles(raw):
+    if not raw:
+        return None
+    roles = [role.strip() for role in raw.split(",") if role.strip()]
+    if not roles:
+        raise SystemExit("--roles was provided but no role names were found.")
+    return roles
+
+
 def clean_text(text):
     return re.sub(r"\s+", " ", text.replace("\t", " ")).strip()
 
@@ -166,8 +175,7 @@ def detect_target_indices(document):
     return indices
 
 
-def compare(template_doc, target_doc, mapping, include_run=False):
-    failed = []
+def build_role_pairs(template_doc, target_doc, mapping, roles=None):
     if mapping is None:
         target_indices = detect_target_indices(target_doc)
         role_pairs = {
@@ -177,6 +185,28 @@ def compare(template_doc, target_doc, mapping, include_run=False):
     else:
         role_pairs = mapping
 
+    if roles:
+        missing = [role for role in roles if role not in role_pairs]
+        if missing:
+            available = ", ".join(role_pairs)
+            raise SystemExit(f"Unknown role(s) in --roles: {', '.join(missing)}. Available: {available}")
+        role_pairs = {role: role_pairs[role] for role in roles}
+
+    return role_pairs
+
+
+def role_map(role_pairs):
+    return {
+        role: {
+            "template_index": pair[0],
+            "target_index": pair[1],
+        }
+        for role, pair in role_pairs.items()
+    }
+
+
+def compare(template_doc, target_doc, role_pairs, include_run=False):
+    failed = []
     for role, (template_index, target_index) in role_pairs.items():
         if template_index is None or target_index is None:
             failed.append(
@@ -219,40 +249,101 @@ def document_colors(docx_path):
     return sorted(colors)
 
 
-def main():
-    parser = argparse.ArgumentParser(description="Compare a target DOCX against a Word template.")
-    parser.add_argument("--template", required=True, help="Template .docx path")
-    parser.add_argument("--target", required=True, help="Target .docx path")
-    parser.add_argument("--mapping", help="JSON mapping of role to [template_index, target_index]")
-    parser.add_argument("--include-run", action="store_true", help="Also compare first text run font properties")
-    parser.add_argument("--check-colors", action="store_true", help="Report document XML color values")
-    parser.add_argument("--require-black-only", action="store_true", help="Fail if target document has non-black explicit colors")
-    args = parser.parse_args()
-
+def build_report(args):
     template_path = Path(args.template)
     target_path = Path(args.target)
     template_doc = Document(str(template_path))
     target_doc = Document(str(target_path))
     mapping = load_mapping(args.mapping)
+    roles = parse_roles(args.roles)
+    pairs = build_role_pairs(template_doc, target_doc, mapping, roles=roles)
 
+    expected_sections = section_signature(template_doc)
+    actual_sections = section_signature(target_doc)
     section_failed = []
-    if section_signature(template_doc) != section_signature(target_doc):
-        section_failed.append({"expected": section_signature(template_doc), "actual": section_signature(target_doc)})
+    if expected_sections != actual_sections:
+        section_failed.append({"expected": expected_sections, "actual": actual_sections})
 
-    format_failed = compare(template_doc, target_doc, mapping, include_run=args.include_run)
+    format_failed = compare(template_doc, target_doc, pairs, include_run=args.include_run)
 
-    print("section_failed", json.dumps(section_failed, ensure_ascii=False))
-    print("format_failed", json.dumps(format_failed, ensure_ascii=False))
-
+    colors = None
     color_failed = []
     if args.check_colors or args.require_black_only:
         colors = document_colors(target_path)
-        print("document_colors", json.dumps(colors, ensure_ascii=False))
         if args.require_black_only:
-            color_failed = [color for color in colors if 'w:val="000000"' not in color and 'w:val="auto"' not in color]
-            print("color_failed", json.dumps(color_failed, ensure_ascii=False))
+            color_failed = [
+                color
+                for color in colors
+                if 'w:val="000000"' not in color and 'w:val="auto"' not in color
+            ]
 
-    if section_failed or format_failed or color_failed:
+    return {
+        "ok": not (section_failed or format_failed or color_failed),
+        "template": str(template_path),
+        "target": str(target_path),
+        "mapping_source": str(args.mapping) if args.mapping else "auto",
+        "roles": list(pairs),
+        "role_map": role_map(pairs),
+        "section_failed": section_failed,
+        "format_failed": format_failed,
+        "document_colors": colors,
+        "color_failed": color_failed,
+    }
+
+
+def print_report(report, args):
+    print("section_failed", json.dumps(report["section_failed"], ensure_ascii=False))
+    print("format_failed", json.dumps(report["format_failed"], ensure_ascii=False))
+
+    if args.dump_map:
+        print("role_map", json.dumps(report["role_map"], ensure_ascii=False))
+
+    if args.check_colors or args.require_black_only:
+        print("document_colors", json.dumps(report["document_colors"], ensure_ascii=False))
+        if args.require_black_only:
+            print("color_failed", json.dumps(report["color_failed"], ensure_ascii=False))
+
+    if args.summary:
+        print(
+            "summary",
+            json.dumps(
+                {
+                    "ok": report["ok"],
+                    "section_failures": len(report["section_failed"]),
+                    "format_failures": len(report["format_failed"]),
+                    "color_failures": len(report["color_failed"]),
+                },
+                ensure_ascii=False,
+            ),
+        )
+
+
+def write_report(report, path):
+    output_path = Path(path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Compare a target DOCX against a Word template.")
+    parser.add_argument("--template", required=True, help="Template .docx path")
+    parser.add_argument("--target", required=True, help="Target .docx path")
+    parser.add_argument("--mapping", help="JSON mapping of role to [template_index, target_index]")
+    parser.add_argument("--roles", help="Comma-separated role names to compare, such as h1,h2,ref_item")
+    parser.add_argument("--include-run", action="store_true", help="Also compare first text run font properties")
+    parser.add_argument("--check-colors", action="store_true", help="Report document XML color values")
+    parser.add_argument("--require-black-only", action="store_true", help="Fail if target document has non-black explicit colors")
+    parser.add_argument("--dump-map", action="store_true", help="Print the resolved role-to-paragraph mapping")
+    parser.add_argument("--summary", action="store_true", help="Print a compact pass/fail summary")
+    parser.add_argument("--report", help="Write a JSON compliance report to this path")
+    args = parser.parse_args()
+
+    report = build_report(args)
+    print_report(report, args)
+    if args.report:
+        write_report(report, args.report)
+
+    if not report["ok"]:
         sys.exit(1)
 
 

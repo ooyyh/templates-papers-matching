@@ -9,6 +9,12 @@ description: Create, repair, or audit template-based academic artifacts so the o
 
 Treat the template and submission requirements as the source of truth. Do not rely on defaults, theme styles, or visual guesswork. Generate or edit the target artifact so corresponding elements inherit or explicitly match the template, then run a machine comparison or another concrete compliance check. Do not report completion until the check passes or you clearly state the remaining mismatch.
 
+## Reference Map
+
+- Read `references/workflow.md` when creating, repairing, or auditing a real submission.
+- Read `references/reporting.md` when the user asks for a compliance report, audit memo, acceptance criteria, or a concise delivery summary.
+- Use `scripts/compare_docx_template.py` for DOCX layout checks; patch or extend it when a new repeatable check is needed.
+
 ## General Workflow
 
 1. Identify the template, target artifact, and submission rules.
@@ -38,6 +44,7 @@ Treat the template and submission requirements as the source of truth. Do not re
    - Check the report for `format_failed []` or no mismatches.
    - Check document XML for non-black colors if the template requires black headings/body text.
    - Check content requirements separately, such as word count and reference count.
+   - Save a JSON report when the result will be reused, attached, or compared across iterations.
 
 6. Iterate until clean.
    - If validation shows mismatches, patch the generator or document and rerun validation.
@@ -51,7 +58,9 @@ Use the bundled checker:
 python C:\Users\OYeah\.codex\skills\templates-papers-matching\scripts\compare_docx_template.py `
   --template path\to\template.docx `
   --target path\to\target.docx `
-  --check-colors
+  --check-colors `
+  --summary `
+  --report path\to\format-report.json
 ```
 
 For templates whose matching positions are unusual, pass a JSON role mapping:
@@ -75,6 +84,14 @@ python ...\compare_docx_template.py --template template.docx --target target.doc
 ```
 
 The mapping values are `[template_paragraph_index, target_paragraph_index]`.
+
+Useful options:
+
+- `--dump-map`: print the auto-detected template/target paragraph map.
+- `--roles h1,h2,ref_item`: compare only selected roles while diagnosing.
+- `--include-run`: include first text run font checks.
+- `--require-black-only`: fail if explicit non-black document colors remain.
+- `--report report.json`: write the full machine-readable result.
 
 ## Completion Checklist
 
