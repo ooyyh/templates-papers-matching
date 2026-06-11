@@ -55,7 +55,7 @@ Treat the template and submission requirements as the source of truth. Do not re
 Use the bundled checker:
 
 ```powershell
-python C:\Users\OYeah\.codex\skills\templates-papers-matching\scripts\compare_docx_template.py `
+python scripts\compare_docx_template.py `
   --template path\to\template.docx `
   --target path\to\target.docx `
   --check-colors `
